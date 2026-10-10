@@ -1,10 +1,11 @@
 {
   "schemaVersion": 1,
-  "id": "omarchy-giphy",
-  "name": "GIFs",
+  "id": "io.github.jamers99.omarchy-giphy",
+  "name": "Simple GIFs",
   "version": "1.0.0",
-  "author": "James",
-  "description": "Search Giphy and insert a GIF into the focused window",
+  "author": "jamers99",
+  "license": "MIT",
+  "description": "Dead simple Giphy picker. Search, press Enter, and the GIF is inserted. No config.",
   "kinds": [
     "overlay"
   ],
