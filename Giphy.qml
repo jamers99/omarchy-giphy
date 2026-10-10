@@ -14,8 +14,8 @@ Item {
   property var manifest: null
 
   readonly property string home: Quickshell.env("HOME")
-  readonly property string pluginId: (manifest && manifest.id) || "james.giphy"
-  readonly property string sourceDir: (manifest && manifest.__sourceDir) || (home + "/.config/omarchy/plugins/james.giphy")
+  readonly property string pluginId: (manifest && manifest.id) || "omarchy-giphy"
+  readonly property string sourceDir: (manifest && manifest.__sourceDir) || (home + "/.config/omarchy/plugins/omarchy-giphy")
   readonly property string keyPath: home + "/.config/omarchy/giphy-key"
 
   property bool opened: false
