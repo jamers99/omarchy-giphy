@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "james.giphy",
+  "name": "GIFs",
+  "version": "1.0.0",
+  "author": "James",
+  "description": "Search Giphy and insert a GIF into the focused window",
+  "kinds": [
+    "overlay"
+  ],
+  "keepLoaded": true,
+  "entryPoints": {
+    "overlay": "Giphy.qml"
+  }
+}

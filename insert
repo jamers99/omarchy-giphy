@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# Insert a Giphy GIF into the focused window. The file is offered on the
+# clipboard only for the paste itself, then the previous clipboard is restored.
+
+set -uo pipefail
+
+url="${1:-}"
+id="${2:-}"
+[[ -n $url && $id =~ ^[A-Za-z0-9]+$ ]] || exit 1
+
+cache="${XDG_CACHE_HOME:-$HOME/.cache}/giphy"
+gif="$cache/$id.gif"
+mkdir -p "$cache"
+
+if [[ ! -s $gif ]]; then
+  if ! curl -fsSL --max-time 20 -o "$gif.part" "$url"; then
+    rm -f "$gif.part"
+    notify-send "GIF" "Couldn't download the GIF"
+    exit 1
+  fi
+  mv "$gif.part" "$gif"
+fi
+
+# Remember what was on the clipboard so it can be put back afterwards.
+saved=$(mktemp)
+types=$(wl-paste --list-types 2>/dev/null || true)
+type=""
+for t in 'text/plain;charset=utf-8' text/plain image/png; do
+  grep -qxF "$t" <<<"$types" && { type=$t; break; }
+done
+type=${type:-$(head -n1 <<<"$types")}
+[[ -n $type ]] && ! wl-paste --no-newline --type "$type" >"$saved" 2>/dev/null && type=""
+
+# A file reference keeps the animation; raw image data pastes as a still in many apps.
+printf 'file://%s\r\n' "$gif" | wl-copy --type text/uri-list --sensitive --foreground &
+copy_pid=$!
+
+sleep 0.15
+wtype -M shift -k Insert -m shift 2>/dev/null || true
+sleep 0.5
+
+kill "$copy_pid" 2>/dev/null || true
+
+if [[ -n $type ]]; then
+  wl-copy --type "$type" <"$saved"
+else
+  wl-copy --clear
+fi
+rm -f "$saved"
