@@ -32,6 +32,11 @@ done
 type=${type:-$(head -n1 <<<"$types")}
 [[ -n $type ]] && ! wl-paste --no-newline --type "$type" >"$saved" 2>/dev/null && type=""
 
+# Password managers mark secrets with a hint so clipboard history skips them.
+# Keep that hint when putting a secret back, or history would save it.
+sensitive=()
+grep -qiE '^x-kde-passwordManagerHint$|sensitive|concealed' <<<"$types" && sensitive=(--sensitive)
+
 # A file reference keeps the animation; raw image data pastes as a still in many apps.
 printf 'file://%s\r\n' "$gif" | wl-copy --type text/uri-list --sensitive --foreground &
 copy_pid=$!
@@ -43,7 +48,7 @@ sleep 0.5
 kill "$copy_pid" 2>/dev/null || true
 
 if [[ -n $type ]]; then
-  wl-copy --type "$type" <"$saved"
+  wl-copy "${sensitive[@]}" --type "$type" <"$saved"
 else
   wl-copy --clear
 fi
